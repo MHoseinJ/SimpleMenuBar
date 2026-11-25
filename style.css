@@ -1,71 +1,106 @@
-/* Base */
+/* ============================================================
+   Base wrapper
+   ============================================================ */
+
+.mh-iks-nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   Desktop: WP Nav horizontal (left side)
+   ============================================================ */
+
+.mh-wp-nav {
+    display: flex;
+    align-items: center;
+    margin-inline-start: auto; /* push to the left in RTL */
+}
+
+.mh-wp-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mh-wp-nav__list li {
+    position: relative;
+}
+
+.mh-wp-nav__list a {
+    display: inline-block;
+    padding: 6px 0;
+    color: inherit;
+    text-decoration: none;
+    font: inherit;
+    font-size: inherit;
+    white-space: nowrap;
+}
+
+.mh-wp-nav__list a:hover {
+    opacity: 0.75;
+}
+
+/* Submenus in desktop WP Nav */
+.mh-wp-nav__list .sub-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 100;
+    min-width: 180px;
+    padding: 8px 0;
+    margin: 0;
+    list-style: none;
+    background: var(--wp--preset--color--base, #fff);
+    color: var(--wp--preset--color--accent-4, #222);
+    border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 150ms ease, visibility 150ms ease;
+}
+
+.mh-wp-nav__list li:hover > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mh-wp-nav__list .sub-menu a {
+    display: block;
+    padding: 6px 14px;
+}
+
+/* ============================================================
+   Hamburger toggle (IKS)
+   ============================================================ */
 
 .mh-iks-menu {
     display: inline-block;
+    flex-shrink: 0;
 }
-
-/* Theme integration */
-
-.mh-iks-menu__panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-
-    z-index: 99999;
-
-    width: min(360px, 88vw);
-    height: 100vh;
-    height: 100dvh;
-
-    overflow-y: auto;
-
-    background: var(--wp--preset--color--base, Canvas);
-    color: var(--wp--preset--color--accent-4, CanvasText);
-
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-
-    box-shadow: -8px 0 30px rgb(0 0 0 / 12%);
-
-    transform: translateX(100%);
-    visibility: hidden;
-    pointer-events: none;
-
-    transition:
-        transform 250ms ease,
-        visibility 250ms ease;
-}
-
-.mh-iks-menu__panel.is-open {
-    transform: translateX(0);
-    visibility: visible;
-    pointer-events: auto;
-}
-
-/* Hamburger */
 
 .mh-iks-menu__toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-
     width: auto;
     height: 44px;
-    padding: 0 14px;
-
+    padding: 0 16px;
     white-space: nowrap;
-
-    border: 1px solid var(--wp--preset--color--accent-4);
+    border: 1px solid var(--wp--preset--color--accent-4, #222);
     border-radius: 6px;
-
-    background: var(--wp--preset--color--accent-4);
-    color: var(--wp--preset--color--base);
-
+    background: var(--wp--preset--color--accent-4, #222);
+    color: var(--wp--preset--color--base, #fff);
     font: inherit;
     font-size: inherit;
-
     cursor: pointer;
 }
 
@@ -73,28 +108,24 @@
     opacity: 0.85;
 }
 
-/* Backdrop */
+/* ============================================================
+   Backdrop (with blur)
+   ============================================================ */
 
 .mh-iks-menu__backdrop {
     position: fixed;
     inset: 0;
-
     z-index: 99998;
-
     width: 100%;
     height: 100%;
-
     border: none;
-
-    background: rgb(0 0 0 / 55%);
-
+    background: rgb(0 0 0 / 45%);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-
-    transition:
-        opacity 250ms ease,
-        visibility 250ms ease;
+    transition: opacity 250ms ease, visibility 250ms ease;
 }
 
 .mh-iks-menu__backdrop.is-open {
@@ -103,54 +134,121 @@
     pointer-events: auto;
 }
 
-/* Sidebar header */
+/* ============================================================
+   Drawer panel (default: mobile/tablet full-screen)
+   ============================================================ */
+
+.mh-iks-menu__panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    background: var(--wp--preset--color--base, #fff);
+    color: var(--wp--preset--color--accent-4, #222);
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    box-shadow: -8px 0 30px rgb(0 0 0 / 12%);
+    transform: translateX(100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 250ms ease, visibility 250ms ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.mh-iks-menu__panel.is-open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* ============================================================
+   Tabs (visible only mobile/tablet)
+   ============================================================ */
+
+.mh-iks-menu__tabs {
+    display: flex;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+    flex-shrink: 0;
+}
+
+.mh-iks-menu__tab {
+    flex: 1;
+    padding: 14px 10px;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    text-align: center;
+    opacity: 0.6;
+    transition: opacity 150ms ease, background 150ms ease;
+}
+
+.mh-iks-menu__tab:hover {
+    opacity: 0.85;
+}
+
+.mh-iks-menu__tab.is-active {
+    opacity: 1;
+    font-weight: 600;
+    background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+/* Tab panels */
+.mh-iks-menu__tabpanel {
+    flex: 1;
+    overflow-y: auto;
+    display: none;
+}
+
+.mh-iks-menu__tabpanel.is-active {
+    display: block;
+}
+
+/* ============================================================
+   Drawer header
+   ============================================================ */
 
 .mh-iks-menu__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding: 18px 20px;
-
-    border-bottom: 1px solid color-mix(
-        in srgb,
-        currentColor 15%,
-        transparent
-    );
-
+    padding: 14px 20px;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
     font: inherit;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 .mh-iks-menu__close {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     width: 36px;
     height: 36px;
-
     border: none;
     border-radius: 6px;
-
     background: transparent;
     color: inherit;
-
     font-size: 28px;
     cursor: pointer;
-
     transition: background 150ms ease;
 }
 
 .mh-iks-menu__close:hover {
-    background: color-mix(
-        in srgb,
-        currentColor 10%,
-        transparent
-    );
+    background: color-mix(in srgb, currentColor 10%, transparent);
 }
 
-/* Menu content */
+/* ============================================================
+   Drawer content
+   ============================================================ */
 
 .mh-iks-menu__content {
     padding: 15px;
@@ -161,26 +259,120 @@
     color: inherit;
 }
 
-/* Hidden elements */
+/* WP Nav inside drawer: vertical list */
+.mh-wp-nav-content .mh-wp-nav__list {
+    flex-direction: column;
+    gap: 0;
+}
+
+.mh-wp-nav-content .mh-wp-nav__list li {
+    border-bottom: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.mh-wp-nav-content .mh-wp-nav__list a {
+    display: block;
+    padding: 10px 4px;
+}
+
+.mh-wp-nav-content .mh-wp-nav__list .sub-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: none;
+    border: none;
+    padding-right: 16px;
+    background: transparent;
+}
+
+/* ============================================================
+   Hidden
+   ============================================================ */
 
 .mh-iks-menu__panel[hidden],
 .mh-iks-menu__backdrop[hidden] {
     display: none !important;
 }
 
-/* Accessibility */
+/* ============================================================
+   Desktop: hide tabs, show WP Nav separately, panel becomes sidebar
+   ============================================================ */
 
-.mh-iks-menu button:focus-visible,
-.mh-iks-menu__panel button:focus-visible,
-.mh-iks-menu__panel a:focus-visible {
-    outline: 2px solid var(--wp--preset--color--accent-3);
+@media (min-width: 1025px) {
+
+    /* Hide tabs on desktop */
+    .mh-iks-menu__tabs {
+        display: none;
+    }
+
+    /* Panel on desktop: sidebar with fixed width, not full-screen */
+    .mh-iks-menu__panel {
+        width: min(360px, 88vw);
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    /* Both tab panels visible in desktop (since no tabs to switch) */
+    .mh-iks-menu__tabpanel {
+        display: block !important;
+    }
+
+    /* Hide the WP Nav tabpanel inside drawer on desktop,
+       because WP Nav is already visible outside as horizontal nav */
+    .mh-iks-menu__tabpanel[aria-labelledby$="-tab-wp"] {
+        display: none !important;
+    }
+
+    /* Ensure IKS tabpanel is visible */
+    .mh-iks-menu__tabpanel[aria-labelledby$="-tab-iks"] {
+        display: block !important;
+    }
+}
+
+/* ============================================================
+   Mobile / Tablet: hide the standalone WP Nav outside drawer
+   ============================================================ */
+
+@media (max-width: 1024px) {
+    .mh-wp-nav {
+        display: none;
+    }
+
+    .mh-iks-nav-wrapper {
+        justify-content: flex-start;
+    }
+
+    /* Panel width in tablet */
+    .mh-iks-menu__panel {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+}
+
+/* Tablet only: slightly narrower drawer */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .mh-iks-menu__panel {
+        width: min(420px, 90vw);
+        height: 100vh;
+        height: 100dvh;
+    }
+}
+
+/* ============================================================
+   Accessibility
+   ============================================================ */
+
+.mh-iks-nav-wrapper button:focus-visible,
+.mh-iks-nav-wrapper a:focus-visible {
+    outline: 2px solid var(--wp--preset--color--accent-3, #007cba);
     outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .mh-iks-menu__panel,
     .mh-iks-menu__backdrop,
-    .mh-iks-menu button {
+    .mh-iks-menu__tab,
+    .mh-wp-nav__list .sub-menu {
         transition: none;
     }
 }

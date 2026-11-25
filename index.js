@@ -5,10 +5,10 @@
     const { PanelBody, TextControl } = wp.components;
 
     registerBlockType('mh/iks-menu', {
-        title: 'IKS Menu',
+        title: 'IKS Menu + WP Nav',
         category: 'widgets',
         icon: 'menu',
-        description: 'Display an IKS Menu.',
+        description: 'Display IKS Menu sidebar and WordPress Navigation.',
 
         edit: function ({ attributes, setAttributes }) {
             return el(
@@ -19,16 +19,18 @@
                     {},
                     el(
                         PanelBody,
-                        { title: 'Menu Settings' },
+                        { title: 'تنظیمات منو' },
                         el(TextControl, {
-                            label: 'Menu ID',
+                            label: 'شناسه منوی IKS',
                             value: attributes.menuId,
-                            onChange: value =>
-                                setAttributes({ menuId: value })
+                            onChange: value => setAttributes({ menuId: value })
                         })
                     )
                 ),
-                el('p', {}, 'IKS Menu: ' + attributes.menuId)
+                el('p', {}, 'IKS Menu: ' + attributes.menuId + ' (پیش‌نمایش در فرانت‌اند)'),
+                el('p', { style: { fontSize: '12px', color: '#666' } },
+                    'ناوبری وردپرس: از منوی primary یا header قالب استفاده می‌شود.'
+                )
             );
         },
 

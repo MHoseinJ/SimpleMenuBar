@@ -1,15 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.mh-iks-menu').forEach(root => {
-        const toggle = root.querySelector('.mh-iks-menu__toggle');
-        const panel = root.querySelector('.mh-iks-menu__panel');
-        const backdrop = root.querySelector('.mh-iks-menu__backdrop');
-        const closeButton = root.querySelector('.mh-iks-menu__close');
+    document.querySelectorAll('.mh-iks-nav-wrapper').forEach(wrapper => {
+        const toggle = wrapper.querySelector('.mh-iks-menu__toggle');
+        const panel = wrapper.querySelector('.mh-iks-menu__panel');
+        const backdrop = wrapper.querySelector('.mh-iks-menu__backdrop');
+        const closeButton = wrapper.querySelector('.mh-iks-menu__close');
+        const tabs = wrapper.querySelectorAll('.mh-iks-menu__tab');
+        const tabPanels = wrapper.querySelectorAll('.mh-iks-menu__tabpanel');
 
         if (!toggle || !panel || !backdrop || !closeButton) {
             return;
         }
 
-        // Move the drawer outside the header DOM hierarchy.
+        // Move drawer + backdrop to body to avoid stacking context issues
         document.body.appendChild(backdrop);
         document.body.appendChild(panel);
 
@@ -21,6 +23,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let previousOverflow = '';
 
+        /* ---------- Tab switching ---------- */
+        function activateTab(tab) {
+            tabs.forEach(t => {
+                t.classList.remove('is-active');
+                t.setAttribute('aria-selected', 'false');
+                t.setAttribute('tabindex', '-1');
+            });
+            tabPanels.forEach(p => {
+                p.classList.remove('is-active');
+                p.hidden = true;
+            });
+
+            tab.classList.add('is-active');
+            tab.setAttribute('aria-selected', 'true');
+            tab.setAttribute('tabindex', '0');
+
+            const targetId = tab.getAttribute('aria-controls');
+            const targetPanel = panel.querySelector('#' + CSS.escape(targetId));
+            if (targetPanel) {
+                targetPanel.classList.add('is-active');
+                targetPanel.hidden = false;
+            }
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => activateTab(tab));
+            tab.addEventListener('keydown', e => {
+                const currentIndex = Array.from(tabs).indexOf(tab);
+                let nextIndex = null;
+                if (e.key === 'ArrowRight') {
+                    nextIndex = (currentIndex + 1) % tabs.length;
+                } else if (e.key === 'ArrowLeft') {
+                    nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                }
+                if (nextIndex !== null) {
+                    e.preventDefault();
+                    tabs[nextIndex].focus();
+                    activateTab(tabs[nextIndex]);
+                }
+            });
+        });
+
+        /* ---------- Open / Close ---------- */
         function openMenu() {
             previousOverflow = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
@@ -33,7 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             toggle.setAttribute('aria-expanded', 'true');
 
-            closeButton.focus();
+            // Focus first focusable in active tab panel
+            const activePanel = panel.querySelector('.mh-iks-menu__tabpanel.is-active');
+            const firstFocusable = activePanel
+                ? activePanel.querySelector('a[href], button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])')
+                : null;
+            (firstFocusable || closeButton).focus();
         }
 
         function closeMenu() {
@@ -54,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeButton.addEventListener('click', closeMenu);
         backdrop.addEventListener('click', closeMenu);
 
+        /* ---------- Keyboard trap ---------- */
         document.addEventListener('keydown', event => {
             if (!panel.classList.contains('is-open')) {
                 return;
@@ -81,10 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.shiftKey && document.activeElement === first) {
                     event.preventDefault();
                     last.focus();
-                } else if (
-                    !event.shiftKey &&
-                    document.activeElement === last
-                ) {
+                } else if (!event.shiftKey && document.activeElement === last) {
                     event.preventDefault();
                     first.focus();
                 }
